@@ -29,7 +29,12 @@ exports.register = function(req, res) {
     //user.jump()
 
     user.register()
-    res.send("Thank for trying to register")
+    //res.send("Thank for trying to register")
+    if (user.errors.length) {
+        res.send(user.errors)
+    }else {
+        res.send("Congrats, there are no errors.")
+    }
 }
 
 exports.home = function(req, res) {
