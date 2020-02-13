@@ -38,4 +38,5 @@ app.get('/', function(req, res){
 // / this sign is for base server side
 app.use('/', router)
 
-app.listen(3000)
+//app.listen(3000)
+module.exports = app
