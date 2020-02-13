@@ -11,13 +11,22 @@ const express = require('express')
 //we use (), casue we calling it
 //this will return many applications
 const router = express.Router()
+//when we requiring a file, we don't need to put .js
+const userController = require('./controllers/userController')
 
+/*
 router.get('/', function(req ,res) {
     res.render('home-guest')
 })
+*/
+
+router.get('/', userController.home)
  
-router.get('/about', function(req ,res) {
-    res.send('This is our about page')
-})
+router.post('/register', userController.register)
+
+/*
+router.post('/create-post', postController.create)
+router.post('/login', postController.login)
+*/
 
 module.exports = router
