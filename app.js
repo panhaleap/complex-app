@@ -12,7 +12,10 @@ const router = require('./router')
 //it will show "I am the export for the router file"
 //console.log(router.species)
 
-
+//this tells the express to add the user submitted data onto our request obj
+//so that we can access object using req.body
+app.use(express.urlencoded({extended: false}))
+app.use(express.json())
 
 //we tell express to make public folder accessible
 app.use(express.static('public'))
