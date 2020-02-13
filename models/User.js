@@ -10,6 +10,20 @@ let User = function(data) {
     this.errors = []
 }
 
+User.prototype.cleanUp = function() {
+    if (typeof(this.data.username) != "string") {this.data.username = ""}
+    if (typeof(this.data.email) != "string") {this.data.email = ""}
+    if (typeof(this.data.password) != "string") {this.data.password = ""}
+
+    // get rid of any bogus properties
+    //this we cleanup data properties, and this.data must get only these 3 only
+    this.data = {
+        username: this.data.username.trim().toLowerCase(),
+        email: this.data.email.trim().toLowerCase(),
+        password: this.data.password
+    }
+}
+
 //Using this function, 
 //javaScript doesn't have to copy jump function for each object of User.
 //Simply, object of user will can access to this jump function.
@@ -24,6 +38,7 @@ User.prototype.jump = function() {
 User.prototype.validate = function() {
     if (this.data.username == "") {this.errors.push("You must provide a username.")}
     //validator.isAlphanumeric(this.data.username): is true when user not input any special charactors like [, $%*^%#$...
+    //By installing npm install validator, we can use validator
     if(this.data.username != "" && !validator.isAlphanumeric(this.data.username)) {this.errors.push("Username can only contain letters and numbers.")}
 
     //if (this.data.email == "") {this.errors.push("You must provide a valid email address.")}
@@ -39,6 +54,7 @@ User.prototype.validate = function() {
 
 User.prototype.register = function() {
     //Step #1: Validate user data
+    this.cleanUp()
     this.validate()
     //Step #2: Only if there are no validation errors
     //then save user data into a database
