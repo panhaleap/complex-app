@@ -9,8 +9,18 @@ module.exports = {
 // ../ this sign mean we move up to one folder
 const User = require('../models/User')
 
-exports.login = function() {
-
+exports.login = function(req, res) {
+    let user = new User(req.body)
+    //we don't know how long this login() will take, 
+    //because it's working with database
+    //so we have to wait until login have the chance to do its job 
+    //and then send back a respond back to the browser
+    //so we use the traditional function, it is callback. 
+    //so we provide function as an argument
+    //There are many other way beside using callback function
+    user.login(function(result) {
+        res.send(result)
+    })
 }
 
 exports.logout = function() {

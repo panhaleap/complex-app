@@ -24,6 +24,8 @@ router.get('/', userController.home)
  
 router.post('/register', userController.register)
 
+router.post('/login', userController.login)
+
 /*
 router.post('/create-post', postController.create)
 router.post('/login', postController.login)
