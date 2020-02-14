@@ -18,8 +18,24 @@ exports.login = function(req, res) {
     //so we use the traditional function, it is callback. 
     //so we provide function as an argument
     //There are many other way beside using callback function
+    /*
     user.login(function(result) {
         res.send(result)
+    })
+    */
+   //Now we use promise instead of callback function
+   /*
+   user.login(function(result) {
+    res.send(result)
+  })
+  */
+
+    //then: mean say what we want to do if the promise run successfully. Mean our promise call Resolve instead of Reject
+    //catch: mean say what we want to do if the promise fail
+    user.login().then(function(result) {
+        res.send(result)
+    }).catch(function(err) {
+        res.send(err)
     })
 }
 

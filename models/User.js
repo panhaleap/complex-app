@@ -53,6 +53,7 @@ User.prototype.validate = function() {
     if (this.data.username.length > 30) {this.errors.push("username can not exceed 30 characters.")}
 }
 
+/*
 User.prototype.login = function(callback) {
     this.cleanUp()
     //if we can find document with this.data.username, and it will provide that document as second param (attemptedUser)
@@ -64,6 +65,50 @@ User.prototype.login = function(callback) {
             //console.log("Invalid username / password")
             callback("Invalid username / password")
         }
+    })
+}
+*/
+/*
+User.prototype.login = function() {
+    return new Promise((resolve, reject) => {
+        //this is asynchronous operation
+        this.cleanUp()
+        //if we can find document with this.data.username, and it will provide that document as second param (attemptedUser)
+        userCollection.findOne({username: this.data.username}, (err, attemptedUser) => {
+            if (attemptedUser && attemptedUser.password == this.data.password) {
+                //console.log("Congrates!!!!!!!")
+                // callback("Congrats!")
+                resolve("Congrats!")
+            } else {
+                //console.log("Invalid username / password")
+                //callback("Invalid username / password")
+                reject("Invalid username / password")
+            }
+        })
+    })
+}
+*/
+
+User.prototype.login = function() {
+    return new Promise((resolve, reject) => {
+        //this is asynchronous operation
+        this.cleanUp()
+        //if we can find document with this.data.username, and it will provide that document as second param (attemptedUser)
+        //becasue findOne(...) is a method of mongoDB which return a promise 
+        userCollection.findOne({username: this.data.username}).then((attemptedUser) =>{
+            if (attemptedUser && attemptedUser.password == this.data.password) {
+                //console.log("Congrates!!!!!!!")
+                // callback("Congrats!")
+                resolve("Congrats!")
+            } else {
+                //console.log("Invalid username / password")
+                //callback("Invalid username / password")
+                reject("Invalid username / password.")
+            }
+        }).catch(function() {
+            //system error, our develper side error
+            reject("Please try again later.")
+        })
     })
 }
 
