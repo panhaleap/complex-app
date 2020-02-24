@@ -161,4 +161,12 @@ async function runOurActions() {
 //To use hash password: go to command line and run 'npm install bcryptjs' 
 */
 
+/*
+We can trust or identify requests by:
+1.Sessions:
+we use 'npm install express-session'
+
+
+2.Tokens
+*/
 module.exports = User

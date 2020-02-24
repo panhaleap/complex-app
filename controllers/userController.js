@@ -33,6 +33,15 @@ exports.login = function(req, res) {
     //then: mean say what we want to do if the promise run successfully. Mean our promise call Resolve instead of Reject
     //catch: mean say what we want to do if the promise fail
     user.login().then(function(result) {
+        //we just add session.user to req
+        //this session is uniqe per browser visitor
+        //when we write this here, there're 2 things happen. 
+        //#1 server is going to store this session data in memory
+        //#2 session package sends the instruction to the web browser to create the cookies.
+
+        //if we restart our server, the session will be cleared
+        //so instead of storing session data in memory, we store it in mongoDB
+         req.session.user = {favColor: "blue", username: user.data.username}
         res.send(result)
     }).catch(function(err) {
         res.send(err)
@@ -63,6 +72,14 @@ exports.register = function(req, res) {
     }
 }
 
+// exports.home = function(req, res) {
+//     res.render('home-guest')
+// }
+
 exports.home = function(req, res) {
-    res.render('home-guest')
+    if (req.session.user) {
+        res.send("Welcome to the actual application!!!")
+    } else {
+        res.render('home-guest')
+    }
 }

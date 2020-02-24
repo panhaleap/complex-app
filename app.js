@@ -1,6 +1,24 @@
 //to load the package express
 const express = require('express')
+//Use session for trust login and remember user who logged in sucessfully 
+const session = require('express-session')
 const app = express()
+
+let sessionOptions = session({
+    secret: "JavaScript is soooooooooooo cooool",
+    resave: false,
+    saveUninitialized: false,
+    //maxAge : is how long for cookies session should be valid before it expires. 
+    //1000 is 1000miliSecond = 1 second.
+    // Multiply by 60 means convert to minute
+    //Multiply by 60 again means convert to hour
+    //24 is the hour of one day
+    //all in all maxAge: 1000 * 60 * 60 * 24 : mean one day before expire
+    cookie: {maxAge: 1000 * 60 * 60 * 24, httpOnly: true}
+})
+
+//after adding this one, our app could use session now
+app.use(sessionOptions)
 
 // ./ is to look for file in current directory
 //require: in node it does 2 things.
