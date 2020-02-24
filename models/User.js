@@ -1,3 +1,5 @@
+//using hash password
+const bcrypt = require("bcryptjs")
 const userCollection = require('../db').collection("users")
 const validator = require("validator")
 
@@ -47,8 +49,8 @@ User.prototype.validate = function() {
     if (this.data.password == "") {this.errors.push("You must provide a password.")}
     
     if (this.data.password.length > 0 && this.data.password.length < 12) {this.errors.push("Password must be at least 12 characters.")}
-    if (this.data.password.length > 100) {this.errors.push("Password can not exceed 100 characters.")}
-
+    // if (this.data.password.length > 100) {this.errors.push("Password can not exceed 100 characters.")}
+    if (this.data.password.length > 50) {this.errors.push("Password can not exceed 50 characters.")}
     if (this.data.username.length > 0 && this.data.password.length < 3) {this.errors.push("Username must be at least 3 characters.")}
     if (this.data.username.length > 30) {this.errors.push("username can not exceed 30 characters.")}
 }
@@ -96,7 +98,9 @@ User.prototype.login = function() {
         //if we can find document with this.data.username, and it will provide that document as second param (attemptedUser)
         //becasue findOne(...) is a method of mongoDB which return a promise 
         userCollection.findOne({username: this.data.username}).then((attemptedUser) =>{
-            if (attemptedUser && attemptedUser.password == this.data.password) {
+            // if (attemptedUser && attemptedUser.password == this.data.password) {
+            //bcrypt.compareSync(a, b): a is password input by user, b is password hash value from DataBase
+            if (attemptedUser && bcrypt.compareSync(this.data.password, attemptedUser.password)) {
                 //console.log("Congrates!!!!!!!")
                 // callback("Congrats!")
                 resolve("Congrats!")
@@ -120,8 +124,41 @@ User.prototype.register = function() {
     //Step #2: Only if there are no validation errors
     //then save user data into a database
     if (!this.errors.length) {
+        // hash user password
+        let salt = bcrypt.genSaltSync(10)
+        //override user value
+        //1st argument is the value we want to hash
+        //2nd argument is the salt value
+        this.data.password = bcrypt.hashSync(this.data.password, salt)
         userCollection.insertOne(this.data)
     }
 }
+
+/*
+//This is promise
+//Promise is the object that represent the eventual completion of asynchronous operation
+async function runOurActions() {
+    try {
+        //await can be used in async function only.
+        
+        //this mean that, until eatBreakfast finish, then other function or action start after.
+        await eatBreakfast()
+        await eatLaunch()
+        await eatDinner()
+        
+        //this mean that, until eatDessert finish it job, 
+        //and then if it response reject the catch block will do its job after.
+        await eatDessert()
+    } catch(err) {
+        console.log(err)
+    }
+}
+*/
+
+/*
+//Hashing is difference from encript. encript can be decript
+//, but Hash only can encript but can't decript to its original form
+//To use hash password: go to command line and run 'npm install bcryptjs' 
+*/
 
 module.exports = User
