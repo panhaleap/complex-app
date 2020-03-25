@@ -43,14 +43,22 @@ exports.login = function(req, res) {
          //if we restart our server, the session will be cleared
         //so instead of storing session data in memory, we store it in mongoDB
         //so we use npm install connect-mongo
-        res.send(result)
+        // res.send(result)
+        req.session.save(function() {
+            res.redirect('/')
+        })
     }).catch(function(err) {
         res.send(err)
     })
 }
 
-exports.logout = function() {
-    
+exports.logout = function(req, res) {
+    // if the current incoming request from a browser has a cookie with a valid or a matching
+    // session id, so this is going to find session in Database and destroy that session.
+    req.session.destroy(function() {
+        res.redirect('/')
+    })
+    // res.send("You are now logged out.")
 }
 
 exports.register = function(req, res) {
