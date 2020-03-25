@@ -41,20 +41,39 @@ User.prototype.jump = function() {
 */
 
 User.prototype.validate = function() {
-    if (this.data.username == "") {this.errors.push("You must provide a username.")}
-    //validator.isAlphanumeric(this.data.username): is true when user not input any special charactors like [, $%*^%#$...
-    //By installing npm install validator, we can use validator
-    if(this.data.username != "" && !validator.isAlphanumeric(this.data.username)) {this.errors.push("Username can only contain letters and numbers.")}
-
-    //if (this.data.email == "") {this.errors.push("You must provide a valid email address.")}
-    if (!validator.isEmail(this.data.email)) {this.errors.push("You must provide a valid email address.")}
-    if (this.data.password == "") {this.errors.push("You must provide a password.")}
+    return new Promise(async (resolve, reject) =>  {
+        if (this.data.username == "") {this.errors.push("You must provide a username.")}
+        //validator.isAlphanumeric(this.data.username): is true when user not input any special charactors like [, $%*^%#$...
+        //By installing npm install validator, we can use validator
+        if(this.data.username != "" && !validator.isAlphanumeric(this.data.username)) {this.errors.push("Username can only contain letters and numbers.")}
     
-    if (this.data.password.length > 0 && this.data.password.length < 12) {this.errors.push("Password must be at least 12 characters.")}
-    // if (this.data.password.length > 100) {this.errors.push("Password can not exceed 100 characters.")}
-    if (this.data.password.length > 50) {this.errors.push("Password can not exceed 50 characters.")}
-    if (this.data.username.length > 0 && this.data.password.length < 3) {this.errors.push("Username must be at least 3 characters.")}
-    if (this.data.username.length > 30) {this.errors.push("username can not exceed 30 characters.")}
+        //if (this.data.email == "") {this.errors.push("You must provide a valid email address.")}
+        if (!validator.isEmail(this.data.email)) {this.errors.push("You must provide a valid email address.")}
+        if (this.data.password == "") {this.errors.push("You must provide a password.")}
+        
+        if (this.data.password.length > 0 && this.data.password.length < 12) {this.errors.push("Password must be at least 12 characters.")}
+        // if (this.data.password.length > 100) {this.errors.push("Password can not exceed 100 characters.")}
+        if (this.data.password.length > 50) {this.errors.push("Password can not exceed 50 characters.")}
+        if (this.data.username.length > 0 && this.data.password.length < 3) {this.errors.push("Username must be at least 3 characters.")}
+        if (this.data.username.length > 30) {this.errors.push("username can not exceed 30 characters.")}
+    
+        // Only if username is valid then check to see if it's already taken
+        if (this.data.username.length > 2 && this.data.username.length < 31 && validator.isAlphanumeric(this.data.username)) {
+            let usernameExists = await userCollection.findOne({username: this.data.username})
+            if (usernameExists) {
+                this.errors.push("That username is already taken.")
+            }
+        }
+    
+        // Only if email is valid then check to see if it's already taken
+        if (validator.isEmail(this.data.email)) {
+            let eamilExists = await userCollection.findOne({email: this.data.email})
+            if (eamilExists) {
+                this.errors.push("That email is already being used.")
+            }
+        }
+        resolve()
+    })
 }
 
 /*
@@ -119,21 +138,27 @@ User.prototype.login = function() {
 }
 
 User.prototype.register = function() {
-    //Step #1: Validate user data
-    this.cleanUp()
-    this.validate()
-
-    //Step #2: Only if there are no validation errors
-    //then save user data into a database
-    if (!this.errors.length) {
-        // hash user password
-        let salt = bcrypt.genSaltSync(10)
-        //override user value
-        //1st argument is the value we want to hash
-        //2nd argument is the salt value
-        this.data.password = bcrypt.hashSync(this.data.password, salt)
-        userCollection.insertOne(this.data)
-    }
+    return new Promise(async (resolve, reject) => {
+        //Step #1: Validate user data
+        this.cleanUp()
+        // until this statement finish, then below code will do after
+        await this.validate()
+    
+        //Step #2: Only if there are no validation errors
+        //then save user data into a database
+        if (!this.errors.length) {
+            // hash user password
+            let salt = bcrypt.genSaltSync(10)
+            //override user value
+            //1st argument is the value we want to hash
+            //2nd argument is the salt value
+            this.data.password = bcrypt.hashSync(this.data.password, salt)
+            await userCollection.insertOne(this.data)
+            resolve()
+        } else {
+            reject(this.errors)
+        }
+    })
 }
 
 /*

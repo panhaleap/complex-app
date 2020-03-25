@@ -78,13 +78,23 @@ exports.register = function(req, res) {
     //user.homePlanet
     //user.jump()
 
-    user.register()
+    user.register().then(() => {
+        req.session.user = {username: user.data.username}
+        req.session.save(function() {
+            res.redirect('/')
+        })
+    }).catch((regErrors) => {
+        // res.send(user.errors)
+        regErrors.forEach(function(error) {
+            // we add error to collection regErrors
+            req.flash('regErrors', error)
+        })
+        req.session.save(function() {
+            res.redirect('/')
+        })
+    })
     //res.send("Thank for trying to register")
-    if (user.errors.length) {
-        res.send(user.errors)
-    }else {
-        res.send("Congrats, there are no errors.")
-    }
+    
 }
 
 // exports.home = function(req, res) {
@@ -96,6 +106,6 @@ exports.home = function(req, res) {
         // res.send("Welcome to the actual application!!!")
         res.render('home-dashboard', {username: req.session.user.username})
     } else {
-        res.render('home-guest', {errors: req.flash('errors')})
+        res.render('home-guest', {errors: req.flash('errors'), regErrors: req.flash('regErrors')})
     }
 }
