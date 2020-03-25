@@ -6,7 +6,7 @@ module.exports = {
 }
 */
 
-// ../ this sign mean we move up to one folder
+// ../ this sign mean we move up to one upper level folder
 const User = require('../models/User')
 
 exports.login = function(req, res) {
@@ -38,10 +38,11 @@ exports.login = function(req, res) {
         //when we write this here, there're 2 things happen. 
         //#1 server is going to store this session data in memory
         //#2 session package sends the instruction to the web browser to create the cookies.
-
-        //if we restart our server, the session will be cleared
-        //so instead of storing session data in memory, we store it in mongoDB
          req.session.user = {favColor: "blue", username: user.data.username}
+
+         //if we restart our server, the session will be cleared
+        //so instead of storing session data in memory, we store it in mongoDB
+        //so we use npm install connect-mongo
         res.send(result)
     }).catch(function(err) {
         res.send(err)
@@ -78,7 +79,8 @@ exports.register = function(req, res) {
 
 exports.home = function(req, res) {
     if (req.session.user) {
-        res.send("Welcome to the actual application!!!")
+        // res.send("Welcome to the actual application!!!")
+        res.render('home-dashboard', {username: req.session.user.username})
     } else {
         res.render('home-guest')
     }

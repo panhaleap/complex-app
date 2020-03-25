@@ -1,6 +1,8 @@
 //using hash password
 const bcrypt = require("bcryptjs")
-const userCollection = require('../db').collection("users")
+// const userCollection = require('../db').collection("users")
+// we write this because we wrote store: new MongoStore({client: require('./db')}) in app.js
+const userCollection = require('../db').db().collection("users")
 const validator = require("validator")
 
 //this is constructor of User

@@ -2,10 +2,23 @@
 const express = require('express')
 //Use session for trust login and remember user who logged in sucessfully 
 const session = require('express-session')
+// since we store session in memory, so when we restart server or browser, our session will be cleared.
+// To prevent this, we store our session in mongoDB instead. 
+// To to session in mongoDB, we run command: npm install connect-mongo
+// M in capital letter becasue MongoStore is going to be used as bluePrint, we used for creating new Obj
+// (session) here is refer to express session package
+//(session) is represion express-session package above
+//after adding this, we can use it in sessionOptions below
+const MongoStore = require('connect-mongo')(session)
+
 const app = express()
 
+// by default, this will store session in memory. But we could override it by using
+// store: new MongoStore({we can put properties here})
+//{client: ....} is mongoDB client
 let sessionOptions = session({
     secret: "JavaScript is soooooooooooo cooool",
+    store: new MongoStore({client: require('./db')}),
     resave: false,
     saveUninitialized: false,
     //maxAge : is how long for cookies session should be valid before it expires. 
