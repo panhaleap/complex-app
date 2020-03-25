@@ -47,8 +47,14 @@ exports.login = function(req, res) {
         req.session.save(function() {
             res.redirect('/')
         })
-    }).catch(function(err) {
-        res.send(err)
+    }).catch(function(e) {
+        // res.send(err)
+        // first agurment is collection
+        req.flash('errors', e)
+        // res.redirect('/')
+        req.session.save(function() {
+            res.redirect('/')
+        })
     })
 }
 
@@ -90,6 +96,6 @@ exports.home = function(req, res) {
         // res.send("Welcome to the actual application!!!")
         res.render('home-dashboard', {username: req.session.user.username})
     } else {
-        res.render('home-guest')
+        res.render('home-guest', {errors: req.flash('errors')})
     }
 }

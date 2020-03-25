@@ -2,6 +2,8 @@
 const express = require('express')
 //Use session for trust login and remember user who logged in sucessfully 
 const session = require('express-session')
+// to use flash message, we run command to install flash package: npm install connect-flash
+const flash = require('connect-flash')
 // since we store session in memory, so when we restart server or browser, our session will be cleared.
 // To prevent this, we store our session in mongoDB instead. 
 // To to session in mongoDB, we run command: npm install connect-mongo
@@ -32,6 +34,8 @@ let sessionOptions = session({
 
 //after adding this one, our app could use session now
 app.use(sessionOptions)
+//we add flash feature to our application
+app.use(flash())
 
 // ./ is to look for file in current directory
 //require: in node it does 2 things.
