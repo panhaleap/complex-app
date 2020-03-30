@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs")
 // we write this because we wrote store: new MongoStore({client: require('./db')}) in app.js
 const userCollection = require('../db').db().collection("users")
 const validator = require("validator")
+const md5 = require('md5')
 
 //this is constructor of User
 let User = function(data) {
@@ -122,6 +123,7 @@ User.prototype.login = function() {
             // if (attemptedUser && attemptedUser.password == this.data.password) {
             //bcrypt.compareSync(a, b): a is password input by user, b is password hash value from DataBase
             if (attemptedUser && bcrypt.compareSync(this.data.password, attemptedUser.password)) {
+                this.getAvatar()
                 //console.log("Congrates!!!!!!!")
                 // callback("Congrats!")
                 resolve("Congrats!")
@@ -154,6 +156,7 @@ User.prototype.register = function() {
             //2nd argument is the salt value
             this.data.password = bcrypt.hashSync(this.data.password, salt)
             await userCollection.insertOne(this.data)
+            this.getAvatar()
             resolve()
         } else {
             reject(this.errors)
@@ -161,6 +164,11 @@ User.prototype.register = function() {
     })
 }
 
+//Install package (this will give the access to hash and algorithm) : npm install md5
+User.prototype.getAvatar = function() {
+    // this.avatar = `https//gravatar.com/avatar/email?s=128`
+    this.avatar = `https//gravatar.com/avatar/${md5(this.data.email)}?s=128`
+}
 /*
 //This is promise
 //Promise is the object that represent the eventual completion of asynchronous operation
