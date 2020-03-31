@@ -167,7 +167,7 @@ User.prototype.register = function() {
 //Install package (this will give the access to hash and algorithm) : npm install md5
 User.prototype.getAvatar = function() {
     // this.avatar = `https//gravatar.com/avatar/email?s=128`
-    this.avatar = `https//gravatar.com/avatar/${md5(this.data.email)}?s=128`
+    this.avatar = `https://secure.gravatar.com/avatar/${md5(this.data.email)}?s=128`
 }
 /*
 //This is promise
