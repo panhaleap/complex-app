@@ -38,7 +38,7 @@ exports.login = function(req, res) {
         //when we write this here, there're 2 things happen. 
         //#1 server is going to store this session data in memory
         //#2 session package sends the instruction to the web browser to create the cookies.
-         req.session.user = {favColor: "blue", username: user.data.username}
+         req.session.user = {avatar: user.avatar, username: user.data.username}
 
          //if we restart our server, the session will be cleared
         //so instead of storing session data in memory, we store it in mongoDB
@@ -79,7 +79,7 @@ exports.register = function(req, res) {
     //user.jump()
 
     user.register().then(() => {
-        req.session.user = {username: user.data.username}
+        req.session.user = {username: user.data.username, avatar: user.avatar}
         req.session.save(function() {
             res.redirect('/')
         })
@@ -104,7 +104,9 @@ exports.register = function(req, res) {
 exports.home = function(req, res) {
     if (req.session.user) {
         // res.send("Welcome to the actual application!!!")
-        res.render('home-dashboard', {username: req.session.user.username})
+        console.log(req.session.user.avatar);
+        
+        res.render('home-dashboard', {username: req.session.user.username, avatar: req.session.user.avatar})
     } else {
         res.render('home-guest', {errors: req.flash('errors'), regErrors: req.flash('regErrors')})
     }
